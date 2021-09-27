@@ -50,21 +50,13 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
         binding.buttonFlex.setOnClickListener {
             presenter.recolorImage()
         }
-        createAdapter()
 
-    }
-
-    private fun createAdapter(){
-        adapter = ShopListAdapter {
-            Toast.makeText(
-                context,
-                "Flex",
-                Toast.LENGTH_SHORT
-            ).show()
+        binding.buttonFlex2.setOnClickListener {
+            presenter.changeList()
         }
 
-        binding.rvShopList.adapter = adapter
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -80,6 +72,41 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
     }
 
     override fun onInitShopList(stores: List<ShopItem>) {
-        adapter.setStores(stores)
+        adapter = ShopListAdapter(stores.toMutableList()) {
+            Toast.makeText(
+                context,
+                "Flex",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        binding.rvShopList.adapter = adapter
+
+    }
+
+    override fun onChengeShopList(stores: List<ShopItem>) {
+        adapter.update(stores)
+    }
+
+    private val diffUtil = object : GenericItemDiff<ShopItem> {
+        override fun isSame(
+            oldItems: List<ShopItem>,
+            newItems: List<ShopItem>,
+            oldItemPosition: Int,
+            newItemPosition: Int
+        ): Boolean {
+            val oldData = oldItems[oldItemPosition]
+            val newData = newItems[newItemPosition]
+            return oldData.id == newData.id
+
+        }
+
+        override fun isSameContent(
+            oldItems: List<ShopItem>,
+            newItems: List<ShopItem>,
+            oldItemPosition: Int,
+            newItemPosition: Int
+        ): Boolean {
+            return oldItems[oldItemPosition] == newItems[newItemPosition]
+        }
     }
 }

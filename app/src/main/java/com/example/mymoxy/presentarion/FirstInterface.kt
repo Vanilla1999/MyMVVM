@@ -11,4 +11,6 @@ interface FirstInterface: MvpView {
     fun onRecolorImage()
     @AddToEndSingle
     fun onInitShopList(stores: List<ShopItem>)
+    @AddToEndSingle
+    fun onChengeShopList(stores: List<ShopItem>)
 }

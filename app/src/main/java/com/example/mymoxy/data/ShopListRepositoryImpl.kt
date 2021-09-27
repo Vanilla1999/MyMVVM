@@ -48,6 +48,22 @@ object ShopListRepositoryImpl : ShopListRepository {
         return shopList
     }
 
+    override fun getShopList2(): List<ShopItem> {
+        shopList.clear()
+        autoIncrementId = 0
+        for (i in 0 until 10) {
+            if(i==1||i==3||i==6) {
+                val item = ShopItem("Name $i", i + 1, true)
+                addShopItem(item)
+            }else{
+                val item = ShopItem("Name $i", i , true)
+                addShopItem(item)
+            }
+        }
+        return shopList
+    }
+
+
 //    private fun updateList() {
 //        shopListLD.value = shopList.toList()
 //    }

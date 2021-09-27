@@ -50,6 +50,16 @@ class FirstPresenter() : MvpPresenter<FirstInterface>(), CoroutineScope {
         deleteShopItemUseCase.deleteShopItem(shopItem)
     }
 
+    fun changeList() {
+        interact(
+            {
+                getShopListUseCase.getShopList2()
+            },
+            {
+                viewState.onChengeShopList(it)
+            }, {})
+    }
+
     fun changeEnableState(shopItem: ShopItem) {
         val newItem = shopItem.copy(enabled = !shopItem.enabled)
         editShopItemUseCase.editShopItem(newItem)
@@ -70,7 +80,9 @@ class FirstPresenter() : MvpPresenter<FirstInterface>(), CoroutineScope {
                 val job = async(Dispatchers.Default) { interaction()  }
                 jobList.add(job)
                 val result = job.await()
-                callback(result)
+                withContext(Dispatchers.Main) {
+                    callback(result)
+                }
                 jobList.remove(job)
             } catch (e: Throwable) {
                 withContext(Dispatchers.Main) {

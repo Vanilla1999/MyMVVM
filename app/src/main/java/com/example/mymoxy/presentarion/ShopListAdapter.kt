@@ -1,10 +1,13 @@
 package com.example.mymoxy.presentarion
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -13,58 +16,87 @@ import com.example.mymoxy.databinding.ItemShopDisabledBinding
 import com.example.mymoxy.databinding.ItemShopEnabledBinding
 import com.example.mymoxy.tools.then
 import com.sumin.shoppinglist.domain.ShopItem
+import java.lang.Exception
 
-class ShopListAdapter(private val onStoreCallback: (ShopItem) -> Unit):RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ShopListAdapter(private var shopList: MutableList<ShopItem>, private val onStoreCallback: (ShopItem) -> Unit) :
+    RecyclerView.Adapter<ShopListAdapter.ViewHolder>() {
     private val clickListener = { position: Int -> onStoreCallback(shopList[position]) }
-    var shopList = listOf<ShopItem>()
+    private var diffUtil: GenericItemDiff<ShopItem>? = null
+
+
     //  @LayoutRes private val layoutRes: Int,
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemShopEnabledBinding.inflate(inflater, parent, false)
         return ViewHolder(
-            binding, clickListener)
+            binding, clickListener
+        )
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as ViewHolder).bindView(shopList[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        Log.d("TAG", "bind, position = " + position);
+        holder.bindView(shopList[position])
     }
 
     // чтоб использовать разные ViewHolder.
     override fun getItemViewType(position: Int): Int {
         return super.getItemViewType(position)
     }
-    @SuppressLint("NotifyDataSetChanged")
-    fun setStores(list: List<ShopItem>) {
-        shopList = list
-        notifyDataSetChanged()
+
+
+    fun setItem(items: List<ShopItem>) {
+        shopList.addAll(items)
     }
 
-    inner class  ViewHolder(private val item: ItemShopEnabledBinding, private val itemClick: (Int) -> Unit):RecyclerView.ViewHolder(item.root){
+    fun update(items: List<ShopItem>) {
+        val diffCallback = DiffCallback(shopList, items)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        try {
+            this.shopList.clear()
+            this.shopList.addAll(items)
+            diffResult.dispatchUpdatesTo(this)
+
+        }catch (e:Exception){
+            Log.d("TAG", e.message.toString());
+        }
+    }
+
+    inner class ViewHolder(
+        private val item: ItemShopEnabledBinding,
+        private val itemClick: (Int) -> Unit
+    ) : RecyclerView.ViewHolder(item.root) {
 
         init {
             item.root.setOnClickListener { itemClick(adapterPosition) }
         }
+
         @SuppressLint("SetTextI18n")
-        fun bindView(model: ShopItem){
-         val status = model.enabled then "True" ?: "Flase"
+        fun bindView(model: ShopItem) {
+            val status = model.enabled then "True" ?: "Flase"
             itemView.setOnLongClickListener {
                 true
             }
             if (model.enabled) {
                 item.tvName.text = "${model.name} $status"
                 item.tvCount.text = model.count.toString()
-                item.tvName.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.holo_red_light))
+                item.tvName.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        android.R.color.holo_red_light
+                    )
+                )
             }
         }
-        fun flex(f:Int)
-        {
+
+        fun flex(f: Int) {
             //TODO
         }
     }
 
     override fun getItemCount(): Int {
-       return  shopList.size
+        return shopList.size
     }
+
 
 }
 

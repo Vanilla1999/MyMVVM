@@ -9,4 +9,8 @@ class GetShopListUseCase(private val shopListRepository: ShopListRepository) {
         return coroutineScope {
             shopListRepository.getShopList()}
     }
+    suspend fun getShopList2(): List<ShopItem> {
+        return coroutineScope {
+            shopListRepository.getShopList2()}
+    }
 }
