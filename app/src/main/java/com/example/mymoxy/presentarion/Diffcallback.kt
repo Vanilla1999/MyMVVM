@@ -18,11 +18,13 @@ class DiffCallback(
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         // In the real world you need to compare something unique like id
-        return oldGalaxies[oldItemPosition] == newGalaxies[newItemPosition]
+        return oldGalaxies[oldItemPosition].id == newGalaxies[newItemPosition].id
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         // This is called if areItemsTheSame() == true;
-        return oldGalaxies[oldItemPosition] == newGalaxies[newItemPosition]
+        return oldGalaxies[oldItemPosition].enabled == newGalaxies[newItemPosition].enabled &&
+                oldGalaxies[oldItemPosition].count == newGalaxies[newItemPosition].count &&
+                oldGalaxies[oldItemPosition].name.equals(newGalaxies[newItemPosition].name)
     }
 }

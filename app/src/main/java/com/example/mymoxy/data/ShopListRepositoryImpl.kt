@@ -2,19 +2,25 @@ package com.example.mymoxy.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.mymoxy.presentarion.ShopListAdapter
 import com.sumin.shoppinglist.domain.ShopItem
 import com.sumin.shoppinglist.domain.ShopListRepository
+import org.koin.core.definition.indexKey
 
 object ShopListRepositoryImpl : ShopListRepository {
 
     private val shopListLD = mutableListOf<ShopItem> ()
     private val shopList = mutableListOf<ShopItem>()
-
+    private lateinit var item:ShopItem
     private var autoIncrementId = 0
 
     init {
         for (i in 0 until 10) {
-            val item = ShopItem("Name $i", i, true)
+            if(i in 3..4) {
+                 item = ShopItem("Name $i", i, true)
+            }else{
+                 item = ShopItem("Name $i", i, false)
+            }
             addShopItem(item)
         }
     }
@@ -35,7 +41,9 @@ object ShopListRepositoryImpl : ShopListRepository {
     override fun editShopItem(shopItem: ShopItem) {
         val oldElement = getShopItem(shopItem.id)
         shopList.remove(oldElement)
-        addShopItem(shopItem)
+        val shop = ShopItem(shopItem.name,shopItem.count,shopItem.enabled,shopItem.id)
+        shop.enabled=!shop.enabled
+        addShopItem(shop)
     }
 
     override fun getShopItem(shopItemId: Int): ShopItem {
@@ -45,7 +53,7 @@ object ShopListRepositoryImpl : ShopListRepository {
     }
 
     override fun getShopList(): List<ShopItem> {
-        return shopList
+        return shopList.sortedBy { it.id }
     }
 
     override fun getShopList2(): List<ShopItem> {

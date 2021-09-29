@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.mymoxy.R
+import com.example.mymoxy.data.ShopListRepositoryImpl
 import com.example.mymoxy.databinding.FragmentFirstBinding
 import com.example.mymoxy.domain.FirstPresenter
+import com.sumin.shoppinglist.domain.EditShopItemUseCase
+import com.sumin.shoppinglist.domain.GetShopListUseCase
 import com.sumin.shoppinglist.domain.ShopItem
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
@@ -20,7 +23,7 @@ import org.koin.core.parameter.parametersOf
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterface {
+class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterface,ClickListenerForAdapter {
     @InjectPresenter
     lateinit var presenter: FirstPresenter
 
@@ -72,19 +75,33 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
     }
 
     override fun onInitShopList(stores: List<ShopItem>) {
-        adapter = ShopListAdapter(stores.toMutableList()) {
-            Toast.makeText(
-                context,
-                "Flex",
-                Toast.LENGTH_SHORT
-            ).show()
+        adapter = ShopListAdapter {
+            editShopitem(it)
         }
+        adapter.setItem(stores)
+        adapter.setListener(this)
         binding.rvShopList.adapter = adapter
 
     }
 
+    private fun editShopitem(shopItem: ShopItem){
+        Toast.makeText(
+            context,
+            "Смена состояния" + shopItem.id,
+            Toast.LENGTH_SHORT
+        ).show()
+//         val repository = ShopListRepositoryImpl
+//       val getShopListUseCase = GetShopListUseCase(repository)
+//        getShopListUseCase.editShopItem(shopItem)
+        presenter.changeItem(shopItem)
+    }
+
     override fun onChengeShopList(stores: List<ShopItem>) {
+//        adapter.shopList
+//        adapter.setItem(stores)
         adapter.update(stores)
+       // adapter.notifyDataSetChanged()
+       // binding.rvShopList.smoothScrollToPosition(15);
     }
 
     private val diffUtil = object : GenericItemDiff<ShopItem> {
@@ -108,5 +125,19 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
         ): Boolean {
             return oldItems[oldItemPosition] == newItems[newItemPosition]
         }
+    }
+
+    override fun onClickItem(shopItem: ShopItem) {
+        Toast.makeText(
+            context,
+            "Другой листенер" + shopItem.id,
+            Toast.LENGTH_SHORT
+        ).show()
+//        val repository = ShopListRepositoryImpl
+//        val getShopListUseCase = GetShopListUseCase(repository)
+//        val editShopItemUseCase = EditShopItemUseCase(repository)
+//        editShopItemUseCase.editShopItem(shopItem)
+
+        presenter.changeItem(shopItem)
     }
 }
