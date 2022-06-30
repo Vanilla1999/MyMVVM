@@ -87,7 +87,7 @@ class ShopListAdapter(
     fun update(items: List<ShopItem>) {
         Log.d("TAG", "Pfxtybt sdfsdfsdf ")
         val diffCallback = DiffCallback(shopListt, items)
-        val diffResult = DiffUtil.calculateDiff(diffCallback,false)
+        val diffResult = DiffUtil.calculateDiff(diffCallback,true)
         try {
             shopListt = items
             diffResult.dispatchUpdatesTo(this)
