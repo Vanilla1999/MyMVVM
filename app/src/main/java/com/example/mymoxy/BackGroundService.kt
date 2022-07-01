@@ -19,7 +19,7 @@ class BackGroundService : Service() {
         createChannel()
     }
 fdgdfg
-
+sd
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         var extras = intent?.extras
         val command = extras?.getInt(SERVICE_TASK) ?: START_SERVICE
