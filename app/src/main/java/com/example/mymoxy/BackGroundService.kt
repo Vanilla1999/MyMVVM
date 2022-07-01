@@ -18,7 +18,7 @@ class BackGroundService : Service() {
         super.onCreate()
         createChannel()
     }
-
+fdgdfg
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         var extras = intent?.extras
