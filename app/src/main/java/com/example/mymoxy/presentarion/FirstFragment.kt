@@ -1,47 +1,40 @@
 package com.example.mymoxy.presentarion
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.example.mymoxy.MainActivity
 import com.example.mymoxy.R
-import com.example.mymoxy.data.ShopListRepositoryImpl
 import com.example.mymoxy.databinding.FragmentFirstBinding
-import com.example.mymoxy.domain.FirstPresenter
-import com.sumin.shoppinglist.domain.EditShopItemUseCase
-import com.sumin.shoppinglist.domain.GetShopListUseCase
+import com.example.mymoxy.di.DaggerFirstFragmentComponent
+import com.example.mymoxy.di.FirstFragmentComponent
+import com.example.mymoxy.domain.FactoryFirstFragmentViewModel
+import com.example.mymoxy.domain.FirstFragmentViewModel
 import com.sumin.shoppinglist.domain.ShopItem
-import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
-import org.koin.android.ext.android.get
-import org.koin.core.parameter.parametersOf
+import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterface,ClickListenerForAdapter {
-    @InjectPresenter
-    lateinit var presenter: FirstPresenter
+class FirstFragment : Fragment(R.layout.fragment_first), ClickListenerForAdapter {
+    @Inject
+    lateinit var factory: FactoryFirstFragmentViewModel
+    private val viewModelFirstFragment by viewModels<FirstFragmentViewModel> { factory }
+    private val binding: FragmentFirstBinding by viewBinding()
 
-    private var _binding: FragmentFirstBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
     private lateinit var adapter: ShopListAdapter
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
-        return binding.root
-
+    lateinit var fragmentComponent: FirstFragmentComponent
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentComponent = DaggerFirstFragmentComponent.factory()
+            .create((requireActivity() as MainActivity).activityComponent)
+        fragmentComponent.inject(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,81 +43,36 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
-        binding.buttonFlex.setOnClickListener {
-            presenter.recolorImage()
-        }
-
         binding.buttonFlex2.setOnClickListener {
-            presenter.changeList()
+            // presenter.changeList()
         }
-
+        initFlow()
+        initRecyclerView()
     }
 
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun initFlow() {
+        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+            viewModelFirstFragment.sharedFlowShopitem.collect {
+                adapter.update(it)
+            }
+        }
     }
 
-    override fun onInitImage() {
-        binding.image.setImageResource(R.drawable.ic_launcher_foreground)
-    }
-
-    override fun onRecolorImage() {
-        binding.image.setImageResource(R.drawable.ic_load_image)
-    }
-
-    override fun onInitShopList(stores: List<ShopItem>) {
+    private fun initRecyclerView() {
         adapter = ShopListAdapter {
             editShopitem(it)
         }
-        adapter.setItem(stores)
         adapter.setListener(this)
         binding.rvShopList.adapter = adapter
-
     }
 
-    private fun editShopitem(shopItem: ShopItem){
+    private fun editShopitem(shopItem: ShopItem) {
         Toast.makeText(
             context,
             "Смена состояния" + shopItem.id,
             Toast.LENGTH_SHORT
         ).show()
-//         val repository = ShopListRepositoryImpl
-//       val getShopListUseCase = GetShopListUseCase(repository)
-//        getShopListUseCase.editShopItem(shopItem)
-        presenter.changeItem(shopItem)
-    }
-
-    override fun onChengeShopList(stores: List<ShopItem>) {
-//        adapter.shopList
-//        adapter.setItem(stores)
-        adapter.update(stores)
-       // adapter.notifyDataSetChanged()
-       // binding.rvShopList.smoothScrollToPosition(15);
-    }
-
-    private val diffUtil = object : GenericItemDiff<ShopItem> {
-        override fun isSame(
-            oldItems: List<ShopItem>,
-            newItems: List<ShopItem>,
-            oldItemPosition: Int,
-            newItemPosition: Int
-        ): Boolean {
-            val oldData = oldItems[oldItemPosition]
-            val newData = newItems[newItemPosition]
-            return oldData.id == newData.id
-
-        }
-
-        override fun isSameContent(
-            oldItems: List<ShopItem>,
-            newItems: List<ShopItem>,
-            oldItemPosition: Int,
-            newItemPosition: Int
-        ): Boolean {
-            return oldItems[oldItemPosition] == newItems[newItemPosition]
-        }
+        viewModelFirstFragment.editShopItem(shopItem)
     }
 
     override fun onClickItem(shopItem: ShopItem) {
@@ -133,11 +81,6 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
             "Другой листенер" + shopItem.id,
             Toast.LENGTH_SHORT
         ).show()
-//        val repository = ShopListRepositoryImpl
-//        val getShopListUseCase = GetShopListUseCase(repository)
-//        val editShopItemUseCase = EditShopItemUseCase(repository)
-//        editShopItemUseCase.editShopItem(shopItem)
-
-        presenter.changeItem(shopItem)
+        viewModelFirstFragment.editShopItem(shopItem)
     }
 }

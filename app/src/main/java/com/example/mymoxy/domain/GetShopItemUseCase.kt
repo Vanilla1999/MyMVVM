@@ -1,8 +1,18 @@
 package com.sumin.shoppinglist.domain
 
-class GetShopItemUseCase(private val shopListRepository: ShopListRepository) {
+import com.example.mymoxy.data.ShopListRepository
+import javax.inject.Inject
 
-    fun getShopItem(shopItemId: Int): ShopItem {
+interface GetShopItemUseCase {
+    suspend fun getShopItem(shopItemId: Int): ShopItem
+
+}
+
+
+class GetShopItemUseCaseImpl @Inject constructor(private val shopListRepository: ShopListRepository) :
+    GetShopItemUseCase {
+
+    override suspend fun getShopItem(shopItemId: Int): ShopItem {
         return shopListRepository.getShopItem(shopItemId)
     }
 }

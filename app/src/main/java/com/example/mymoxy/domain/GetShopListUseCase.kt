@@ -1,16 +1,25 @@
 package com.sumin.shoppinglist.domain
 
-import androidx.lifecycle.LiveData
+import com.example.mymoxy.data.ShopListRepository
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import javax.inject.Inject
 
-class GetShopListUseCase(private val shopListRepository: ShopListRepository) {
 
-  suspend fun getShopList(): List<ShopItem> {
-        return coroutineScope {
-            shopListRepository.getShopList()}
+interface GetShopListUseCase {
+     fun getShopList(): SharedFlow<List<ShopItem>>
+    suspend fun getShopList2()
+}
+
+class GetShopListUseCaseImpl @Inject constructor(private val shopListRepository: ShopListRepository) :
+    GetShopListUseCase {
+
+    override  fun getShopList(): SharedFlow<List<ShopItem>> {
+        return shopListRepository.getShopList()
     }
-    suspend fun getShopList2(): List<ShopItem> {
-        return coroutineScope {
-            shopListRepository.getShopList2()}
+
+    override suspend fun getShopList2()  {
+        shopListRepository.getShopList2()
     }
 }

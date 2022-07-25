@@ -18,8 +18,7 @@ class BackGroundService : Service() {
         super.onCreate()
         createChannel()
     }
-fdgdfg
-sd
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         var extras = intent?.extras
         val command = extras?.getInt(SERVICE_TASK) ?: START_SERVICE
@@ -30,7 +29,7 @@ sd
 
         Thread(Runnable {
             while (true) {
-                Log.d("Flex", "BackGroundService")
+
                 Thread.sleep(2000)
             }
         }).start()

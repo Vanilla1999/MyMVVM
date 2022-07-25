@@ -115,6 +115,9 @@ fun isPalindrome(head: ListNode): Boolean {
 
 
 fun isPalindrome2(head: ListNode): Boolean {
+
+
+
     var vals = arrayListOf<Int>();
     var currentNode = head;
     while (currentNode.next != null) {

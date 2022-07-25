@@ -13,15 +13,17 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
 import com.example.mymoxy.databinding.ActivityMainBinding
+import com.example.mymoxy.di.DaggerMainActvitityComponent
+import com.example.mymoxy.di.MainActvitityComponent
 
 class MainActivity : AppCompatActivity() {
-
+    lateinit var activityComponent: MainActvitityComponent
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        activityComponent = DaggerMainActvitityComponent.factory().create(this)
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -35,7 +37,6 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
-
         val service = Intent(this,BackGroundService().javaClass)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.startForegroundService(service)

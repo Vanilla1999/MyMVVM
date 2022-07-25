@@ -1,8 +1,15 @@
 package com.sumin.shoppinglist.domain
 
-class DeleteShopItemUseCase(private val shopListRepository: ShopListRepository) {
+import com.example.mymoxy.data.ShopListRepository
+import javax.inject.Inject
 
-    fun deleteShopItem(shopItem: ShopItem) {
+interface DeleteShopItemUseCase{
+    suspend fun deleteShopItem(shopItem: ShopItem)
+}
+
+class DeleteShopItemUseCaseImpl  @Inject constructor(private val shopListRepository: ShopListRepository):DeleteShopItemUseCase {
+
+  override suspend fun deleteShopItem(shopItem: ShopItem) {
         shopListRepository.deleteShopItem(shopItem)
     }
 }
