@@ -98,6 +98,7 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
     }
 
 
+
     override fun onChengeShopList(stores: List<ShopItem>) {
 //        adapter.shopList
 //        adapter.setItem(stores)
