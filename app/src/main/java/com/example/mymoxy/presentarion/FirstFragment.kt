@@ -104,6 +104,7 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
        // binding.rvShopList.smoothScrollToPosition(15);
     }
 
+
     private val diffUtil = object : GenericItemDiff<ShopItem> {
         override fun isSame(
             oldItems: List<ShopItem>,
