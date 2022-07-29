@@ -84,6 +84,7 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
 
     }
 
+
     private fun editShopitem(shopItem: ShopItem){
         Toast.makeText(
             context,
@@ -95,6 +96,7 @@ class FirstFragment : MvpAppCompatFragment(R.layout.fragment_first), FirstInterf
 //        getShopListUseCase.editShopItem(shopItem)
         presenter.changeItem(shopItem)
     }
+
 
     override fun onChengeShopList(stores: List<ShopItem>) {
 //        adapter.shopList
