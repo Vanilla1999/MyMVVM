@@ -16,13 +16,15 @@ import com.example.mymvvm.di.DaggerFirstFragmentComponent
 import com.example.mymvvm.di.FirstFragmentComponent
 import com.example.mymvvm.domain.FactoryFirstFragmentViewModel
 import com.example.mymvvm.domain.FirstFragmentViewModel
+import com.example.mymvvm.presentarion.adapter.ClickListenerForAdapter
+import com.example.mymvvm.presentarion.adapter.ShopListAdapter
 import com.sumin.shoppinglist.domain.ShopItem
 import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment(R.layout.fragment_first), ClickListenerForAdapter {
+class FirstFragment : Fragment(R.layout.fragment_first) {
     @Inject
     lateinit var factory: FactoryFirstFragmentViewModel
     private val viewModelFirstFragment by viewModels<FirstFragmentViewModel> { factory }
@@ -53,7 +55,7 @@ class FirstFragment : Fragment(R.layout.fragment_first), ClickListenerForAdapter
     private fun initFlow() {
         viewLifecycleOwner.lifecycleScope.launchWhenResumed {
             viewModelFirstFragment.sharedFlowShopitem.collect {
-                adapter.update(it)
+                adapter.submitList(it)
             }
         }
     }
@@ -62,7 +64,6 @@ class FirstFragment : Fragment(R.layout.fragment_first), ClickListenerForAdapter
         adapter = ShopListAdapter {
             editShopitem(it)
         }
-        adapter.setListener(this)
         binding.rvShopList.adapter = adapter
     }
 
@@ -75,12 +76,5 @@ class FirstFragment : Fragment(R.layout.fragment_first), ClickListenerForAdapter
         viewModelFirstFragment.editShopItem(shopItem)
     }
 
-    override fun onClickItem(shop: ShopItem) {
-        Toast.makeText(
-            context,
-            "Другой листенер" + shop.id,
-            Toast.LENGTH_SHORT
-        ).show()
-        viewModelFirstFragment.editShopItem(shop)
-    }
+
 }

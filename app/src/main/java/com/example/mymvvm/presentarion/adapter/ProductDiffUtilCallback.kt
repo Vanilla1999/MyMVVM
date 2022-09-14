@@ -1,4 +1,4 @@
-package com.example.mymvvm.presentarion
+package com.example.mymvvm.presentarion.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 

@@ -1,4 +1,4 @@
-package com.example.mymvvm.presentarion
+package com.example.mymvvm.presentarion.adapter
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymvvm.databinding.ItemShopDisabledBinding
 import com.example.mymvvm.databinding.ItemShopEnabledBinding
@@ -16,25 +17,30 @@ import java.lang.IllegalStateException
 
 class ShopListAdapter(
     private val onStoreCallback: (ShopItem) -> Unit
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    companion object {
-        var shopListt = listOf<ShopItem>()
-            set(value) {
-                Log.d("TAG", "Pfxtybt sdfsdfsdf ")
-                field = value
-            }
+) : ListAdapter<ShopItem, RecyclerView.ViewHolder>((object :
+    DiffUtil.ItemCallback<ShopItem>() {
+    override fun areItemsTheSame(oldItem: ShopItem, newItem: ShopItem): Boolean {
+        return oldItem.id == newItem.id
     }
-    private lateinit var clickListener: ClickListenerForAdapter
-    private val itemClick:(Int)->Unit =  { position: Int -> onStoreCallback(shopListt[position]) }
-    private var diffUtil: GenericItemDiff<ShopItem>? = null
+
+    override fun areContentsTheSame(oldItem: ShopItem, newItem: ShopItem): Boolean {
+        return oldItem == newItem
+    }
+
+    // важно
+    override fun getChangePayload(oldItem: ShopItem, newItem: ShopItem): Any? {
+        return super.getChangePayload(oldItem, newItem)
+    }
+
+})) {
+
+    private val itemClick: (ShopItem) -> Unit = { shopItem: ShopItem -> onStoreCallback(shopItem) }
     private val ENABLED = 1
     private val DISBALED = 2
 
     //  @LayoutRes private val layoutRes: Int,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        Log.d("TAG", "viewType= " + viewType)
-        when(viewType){
+        when (viewType) {
             ENABLED -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = ItemShopEnabledBinding.inflate(inflater, parent, false)
@@ -42,11 +48,11 @@ class ShopListAdapter(
                     binding, itemClick
                 )
             }
-            DISBALED ->{
+            DISBALED -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = ItemShopDisabledBinding.inflate(inflater, parent, false)
                 return ViewHolderDisable(
-                    binding, clickListener
+                    binding, itemClick
                 )
             }
             else -> throw IllegalStateException("Incorrect view type")
@@ -54,52 +60,31 @@ class ShopListAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Log.d("TAG", "bind, position = " + position)
-        if(shopListt[position].enabled) {
-            (holder as ViewHolder).bindView(shopListt[position])
-        } else{
-            (holder as ViewHolderDisable).bindView(shopListt[position])
+        if (getItem(position).enabled) {
+            (holder as ViewHolder).bindView(getItem(position))
+        } else {
+            (holder as ViewHolderDisable).bindView(getItem(position))
         }
     }
 
     // чтоб использовать разные ViewHolder.
     override fun getItemViewType(position: Int): Int {
-        return if (shopListt[position].enabled)
-            ENABLED else{
+        return if (getItem(position).enabled)
+            ENABLED else {
             DISBALED
         }
     }
 
 
-    fun setItem(items: List<ShopItem>) {
-        shopListt = items
-    }
-
-    fun setListener(item:ClickListenerForAdapter) {
-        clickListener = item
-    }
-
-    fun update(items: List<ShopItem>) {
-        Log.d("TAG", "Pfxtybt sdfsdfsdf ")
-        val diffCallback = DiffCallback(shopListt, items)
-        val diffResult = DiffUtil.calculateDiff(diffCallback,true)
-        try {
-            shopListt = items
-            diffResult.dispatchUpdatesTo(this)
-
-        } catch (e: Exception) {
-            Log.d("TAG", e.message.toString())
-        }
-    }
-
     inner class ViewHolder(
         private val item: ItemShopEnabledBinding,
-        private val itemClick: (Int) -> Unit
+        private val itemClick: (ShopItem) -> Unit
     ) : RecyclerView.ViewHolder(item.root) {
 
         init {
             item.root.setOnClickListener {
-                itemClick(adapterPosition) }
+                itemClick(getItem(bindingAdapterPosition))
+            }
         }
 
         @SuppressLint("SetTextI18n")
@@ -120,7 +105,7 @@ class ShopListAdapter(
 
     inner class ViewHolderDisable(
         private val item: ItemShopDisabledBinding,
-        private val itemClick: ClickListenerForAdapter
+        private val itemClick:  (ShopItem) -> Unit
     ) : RecyclerView.ViewHolder(item.root) {
 
         init {
@@ -130,7 +115,8 @@ class ShopListAdapter(
         fun bindView(model: ShopItem) {
             val status = model.enabled then "True" ?: "Flase"
             item.root.setOnClickListener {
-                itemClick.onClickItem(model) }
+                itemClick(model)
+            }
             if (model.enabled) {
                 item.tvName.text = "${model.name} $status"
                 item.tvCount.text = model.count.toString()
@@ -148,13 +134,9 @@ class ShopListAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return shopListt.size
-    }
-
 
 }
 
-interface ClickListenerForAdapter{
-    fun onClickItem(shop:ShopItem)
+interface ClickListenerForAdapter {
+    fun onClickItem(shop: ShopItem)
 }
