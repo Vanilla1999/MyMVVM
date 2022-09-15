@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymvvm.R
 import com.example.mymvvm.databinding.ItemShopDisabledBinding
 import com.example.mymvvm.databinding.ItemShopEnabledBinding
 import com.example.mymvvm.tools.then
@@ -35,20 +36,19 @@ class ShopListAdapter(
 })) {
 
     private val itemClick: (ShopItem) -> Unit = { shopItem: ShopItem -> onStoreCallback(shopItem) }
-    private val ENABLED = 1
-    private val DISBALED = 2
+
 
     //  @LayoutRes private val layoutRes: Int,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
-            ENABLED -> {
+            R.layout.item_shop_enabled -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = ItemShopEnabledBinding.inflate(inflater, parent, false)
                 return ViewHolder(
                     binding, itemClick
                 )
             }
-            DISBALED -> {
+            R.layout.item_shop_disabled -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = ItemShopDisabledBinding.inflate(inflater, parent, false)
                 return ViewHolderDisable(
@@ -70,8 +70,8 @@ class ShopListAdapter(
     // чтоб использовать разные ViewHolder.
     override fun getItemViewType(position: Int): Int {
         return if (getItem(position).enabled)
-            ENABLED else {
-            DISBALED
+            R.layout.item_shop_enabled else {
+            R.layout.item_shop_disabled
         }
     }
 
@@ -105,7 +105,7 @@ class ShopListAdapter(
 
     inner class ViewHolderDisable(
         private val item: ItemShopDisabledBinding,
-        private val itemClick:  (ShopItem) -> Unit
+        private val itemClick: (ShopItem) -> Unit
     ) : RecyclerView.ViewHolder(item.root) {
 
         init {

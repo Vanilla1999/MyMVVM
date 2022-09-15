@@ -1,2 +1,2 @@
-rootProject.name = "MyMoxy"
+rootProject.name = "MyMVVM"
 include ':app'
