@@ -117,7 +117,6 @@ class ShopListAdapter(
             item.root.setOnClickListener {
                 itemClick(model)
             }
-            if (model.enabled) {
                 item.tvName.text = "${model.name} $status"
                 item.tvCount.text = model.count.toString()
                 item.tvName.setTextColor(
@@ -126,17 +125,8 @@ class ShopListAdapter(
                         android.R.color.holo_red_light
                     )
                 )
-            }
-        }
-
-        fun flex(f: Int) {
-            //TODO
         }
     }
 
 
-}
-
-interface ClickListenerForAdapter {
-    fun onClickItem(shop: ShopItem)
 }
