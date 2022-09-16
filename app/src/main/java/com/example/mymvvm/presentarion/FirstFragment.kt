@@ -19,7 +19,6 @@ import com.example.mymvvm.di.DaggerFirstFragmentComponent
 import com.example.mymvvm.di.FirstFragmentComponent
 import com.example.mymvvm.domain.FactoryFirstFragmentViewModel
 import com.example.mymvvm.domain.FirstFragmentViewModel
-import com.example.mymvvm.presentarion.adapter.ClickListenerForAdapter
 import com.example.mymvvm.presentarion.adapter.CustomItemDecoration
 import com.example.mymvvm.presentarion.adapter.ShopListAdapter
 import com.sumin.shoppinglist.domain.ShopItem
@@ -71,7 +70,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
         binding.rvShopList.adapter = adapter
 //        binding.rvShopList.addItemDecoration(DividerItemDecoration(requireContext(),LinearLayoutManager.VERTICAL).apply {
 //            setDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_launcher_background)!!) })
-        binding.rvShopList.addItemDecoration( CustomItemDecoration(ContextCompat.getDrawable(requireContext(),R.drawable.ic_launcher_background)!!))
+        binding.rvShopList.addItemDecoration( CustomItemDecoration(ContextCompat.getDrawable(requireContext(),R.drawable.ic_launcher_background)!!,resources))
     }
 
     private fun editShopitem(shopItem: ShopItem) {
