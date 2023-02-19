@@ -61,14 +61,16 @@ class CustomViewItemDecoration(context: Context?, attrs: AttributeSet?, defStyle
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         canvas.drawRect(rec,paint)
-        path.reset()
-//        path.arcTo((right-left).toFloat()/2,height.toFloat()/8,)
-//        path.lineTo(right.toFloat(),0f)
-        path.quadTo((right-left).toFloat()/2,height.toFloat()/10,right.toFloat(),0f)
-        path.close()
+        val corners = floatArrayOf(
+            80f, 80f,   // Top left radius in px
+            80f, 80f,   // Top right radius in px
+            0f, 0f,     // Bottom right radius in px
+            0f, 0f      // Bottom left radius in px
+        )
 
-        canvas.drawPath(path,paintGreen)
-        canvas.drawCircle((right-left).toFloat()/2,height.toFloat()/2,50f,paintGreen)
+        val path = Path()
+        path.addRoundRect(rec, corners, Path.Direction.CW)
+        canvas.drawPath(path, paintGreen)
     }
 
 
